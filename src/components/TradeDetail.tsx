@@ -1,5 +1,5 @@
 import { Link, useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, TrendingUp, TrendingDown, Lock, BarChart2 } from 'lucide-react';
+import { ArrowLeft, TrendingUp, TrendingDown, Lock, BarChart2, Share2, Users } from 'lucide-react';
 import Navigation from './Navigation';
 import { useApp } from '../App';
 
@@ -312,6 +312,23 @@ export default function TradeDetail() {
                 <div className={`text-sm ${trade.result >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {trade.result >= 0 ? '+' : ''}{trade.resultPercent.toFixed(2)}% return
                 </div>
+              </div>
+            )}
+
+            {/* Share to Community (for closed trades) */}
+            {!isLiveTrade && trade.result !== undefined && (
+              <div className="bg-white rounded-xl border border-gray-200 p-6">
+                <h3 className="text-gray-900 mb-4">Share Your Analysis</h3>
+                <p className="text-sm text-gray-600 mb-4">
+                  Share your trade setup and analysis with the community to help others learn.
+                </p>
+                <button
+                  onClick={() => navigate('/community-trade-ideas')}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <Share2 className="w-4 h-4" />
+                  Share to Community
+                </button>
               </div>
             )}
 

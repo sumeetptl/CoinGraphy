@@ -92,7 +92,13 @@ export default function CopilotAssistant() {
   const getAssistantResponse = (query: string) => {
     const lowerQuery = query.toLowerCase();
     
-    if (lowerQuery.includes('fear') || lowerQuery.includes('greed')) {
+    if (lowerQuery.includes('worst day')) {
+      return "Your worst trading day was January 8th, 2025, where you had 4 consecutive losses totaling ₹12,450. The main issue was overtrading during volatile market conditions. You took trades on SOL, DOGE, and ADA without proper setup confirmation. Consider reducing trade frequency during high volatility periods.";
+    } else if (lowerQuery.includes('oversize')) {
+      return "You tend to oversize positions on SOL/USDT and meme coins. Your average position size on SOL is 3.2x your normal risk, which has contributed to 67% of your largest losses. Your risk per trade should ideally be 1-2% of your portfolio. I recommend setting strict position size limits for altcoin trades.";
+    } else if (lowerQuery.includes('pair loses') || lowerQuery.includes('which pair')) {
+      return "Based on your trading history, DOGE/USDT has been your worst performing pair with a -42% ROI and 31% win rate. You've lost ₹18,230 on DOGE trades over the past 3 months. The main issue appears to be timing entries during hype cycles without proper technical confirmation.";
+    } else if (lowerQuery.includes('fear') || lowerQuery.includes('greed')) {
       return "The Fear & Greed Index measures market sentiment from 0 (Extreme Fear) to 100 (Extreme Greed). Currently, the market is showing moderate sentiment. This is calculated using volatility, market momentum, social media trends, and trading volumes. A low score suggests overselling (potential buy opportunity), while a high score indicates overbought conditions (potential sell signal).";
     } else if (lowerQuery.includes('funding')) {
       return "Funding rates show the cost of holding leveraged positions. Positive rates mean longs pay shorts (bullish bias), negative rates mean shorts pay longs (bearish bias). High positive funding suggests overleveraged longs and potential correction. You can see current funding rates in the Derivatives tab on the Markets page.";

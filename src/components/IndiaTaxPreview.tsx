@@ -9,7 +9,9 @@ export default function IndiaTaxPreview({
   realizedGains,
   futuresTds = 0,
 }: IndiaTaxPreviewProps) {
-  const estimatedTax = realizedGains * 0.3;
+  // Handle undefined or null realizedGains
+  const safeRealizedGains = realizedGains || 0;
+  const estimatedTax = safeRealizedGains * 0.3;
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -40,7 +42,7 @@ export default function IndiaTaxPreview({
           </span>
           <span className="text-gray-900">
             ₹
-            {realizedGains.toLocaleString("en-IN", {
+            {safeRealizedGains.toLocaleString("en-IN", {
               maximumFractionDigits: 0,
             })}
           </span>
@@ -50,7 +52,9 @@ export default function IndiaTaxPreview({
           <span className="text-gray-600">
             Estimated tax (30%)
           </span>
-          <span className="text-red-600">₹{estimatedTax}</span>
+          <span className="text-red-600">₹{estimatedTax.toLocaleString("en-IN", {
+              maximumFractionDigits: 0,
+            })}</span>
         </div>
 
         {futuresTds > 0 && (
@@ -58,7 +62,9 @@ export default function IndiaTaxPreview({
             <span className="text-gray-500">
               TDS deducted (futures)
             </span>
-            <span className="text-gray-700">₹{futuresTds}</span>
+            <span className="text-gray-700">₹{futuresTds.toLocaleString("en-IN", {
+              maximumFractionDigits: 0,
+            })}</span>
           </div>
         )}
       </div>

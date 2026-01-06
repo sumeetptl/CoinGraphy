@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowLeft, TrendingUp, TrendingDown } from 'lucide-react';
 import Navigation from './Navigation';
+import AIWeeklyReview from './AIWeeklyReview';
 
 export default function TradeStats() {
   // Mock statistics
@@ -54,6 +55,11 @@ export default function TradeStats() {
           <p className="text-gray-600">
             Historical performance metrics from closed trades
           </p>
+        </div>
+
+        {/* AI Weekly Review */}
+        <div className="mb-8">
+          <AIWeeklyReview weekStart="Jan 6, 2025" weekEnd="Jan 12, 2025" />
         </div>
 
         {/* Key Metrics Grid */}

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { TrendingUp, LayoutDashboard, BookOpen, Settings, Menu, X, Activity, Bell, BarChart2 } from 'lucide-react';
+import { TrendingUp, LayoutDashboard, BookOpen, Settings, Menu, X, Activity, Bell, BarChart2, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useApp } from '../App';
 
@@ -12,6 +12,7 @@ export default function Navigation() {
     { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { path: '/markets', label: 'Markets', icon: BarChart2 },
     { path: '/trades', label: 'Trades', icon: Activity },
+    { path: '/community-trade-ideas', label: 'Community', icon: Users },
     { path: '/learn', label: 'Learn', icon: BookOpen },
     { path: '/settings', label: 'Settings', icon: Settings },
   ];

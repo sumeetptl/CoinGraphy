@@ -68,6 +68,37 @@ const MOCK_TRADE_IDEAS: TradeIdea[] = [
     likes: 31,
     comments: 12,
   },
+  {
+    id: '4',
+    user: {
+      name: 'Neha Gupta',
+      avatar: 'NG',
+    },
+    timestamp: '12 hours ago',
+    pair: 'BNB/USDT',
+    direction: 'Long',
+    chartImage: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=800',
+    reasoning: 'Ascending triangle pattern on daily timeframe. Breakout imminent with accumulation phase complete. Target 720, SL at 680.',
+    tags: ['Pattern', 'Daily', 'Position'],
+    likes: 45,
+    comments: 15,
+    isLiked: true,
+  },
+  {
+    id: '5',
+    user: {
+      name: 'Vikram Singh',
+      avatar: 'VS',
+    },
+    timestamp: '1 day ago',
+    pair: 'ADA/USDT',
+    direction: 'Short',
+    chartImage: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800',
+    reasoning: 'Head and shoulders pattern completing. Neckline at 0.58 breaking down. Target 0.45, SL just above 0.60 for good R:R.',
+    tags: ['Pattern', '4H', 'Swing'],
+    likes: 22,
+    comments: 7,
+  },
 ];
 
 export default function CommunityTradeIdeas() {
