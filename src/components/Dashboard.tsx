@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { TrendingUp, Plus, Edit2, AlertCircle, Info, TrendingDown, BarChart3 } from 'lucide-react';
 import { useApp, Holding } from '../App';
@@ -8,6 +8,8 @@ import AddFuturesModal from './AddFuturesModal';
 import DashboardRiskWidgets from './DashboardRiskWidgets';
 import CopilotAssistant from './CopilotAssistant';
 import IndiaTaxPreview from './IndiaTaxPreview';
+import TradingCalendar from './TradingCalendar';
+import { generateCalendarData } from '../utils/calendarData';
 
 const MOCK_PRICES: { [key: string]: number } = {
   BTC: 8628480,
@@ -45,12 +47,18 @@ export interface FuturesPosition {
 export default function Dashboard() {
   const { holdings, setHoldings } = useApp();
   const [mainTab, setMainTab] = useState<'spot' | 'futures'>('spot');
-  const [futuresTab, setFuturesTab] = useState<'open' | 'closed'>('open');
+  const [futuresTab, setFuturesTab] = useState<'open' | 'closed' | 'calendar'>('open');
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isFuturesModalOpen, setIsFuturesModalOpen] = useState(false);
   const [editingHolding, setEditingHolding] = useState<Holding | null>(null);
   const [editingFutures, setEditingFutures] = useState<FuturesPosition | null>(null);
   const [futuresPositions, setFuturesPositions] = useState<FuturesPosition[]>([]);
+  
+  // Generate calendar data for current month
+  const calendarData = useMemo(() => {
+    const now = new Date();
+    return generateCalendarData(now.getFullYear(), now.getMonth(), 'futures');
+  }, []);
 
   // Initialize with some mock data if empty
   useEffect(() => {
@@ -447,6 +455,16 @@ export default function Dashboard() {
                     >
                       Closed trades
                     </button>
+                    <button
+                      onClick={() => setFuturesTab('calendar')}
+                      className={`pb-3 px-1 transition-colors ${
+                        futuresTab === 'calendar'
+                          ? 'border-b-2 border-blue-600 text-blue-600'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      Calendar
+                    </button>
                   </div>
                 </div>
 
@@ -616,6 +634,17 @@ export default function Dashboard() {
                         </tbody>
                       </table>
                     )}
+                  </div>
+                )}
+
+                {/* Calendar View */}
+                {futuresTab === 'calendar' && (
+                  <div className="p-6">
+                    <TradingCalendar
+                      type="futures"
+                      dailyData={calendarData}
+                      currency="₹"
+                    />
                   </div>
                 )}
               </div>
