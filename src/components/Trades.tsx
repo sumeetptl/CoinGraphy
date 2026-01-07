@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Lock, TrendingUp, TrendingDown, CheckCircle, XCircle, Info, BarChart3 } from 'lucide-react';
 import Navigation from './Navigation';
 import { useApp } from '../App';
+import TradingCalendar from './TradingCalendar';
+import { generateCalendarData } from '../utils/calendarData';
 
 interface ClosedTrade {
   id: string;
@@ -130,10 +132,16 @@ const COIN_COLORS: { [key: string]: string } = {
 };
 
 export default function Trades() {
-  const [activeTab, setActiveTab] = useState<'closed' | 'live'>('closed');
+  const [activeTab, setActiveTab] = useState<'closed' | 'live' | 'calendar'>('closed');
   const { user } = useApp();
   const navigate = useNavigate();
   const isSubscribed = user?.isSubscribed || false;
+
+  // Generate calendar data for current month
+  const calendarData = useMemo(() => {
+    const now = new Date();
+    return generateCalendarData(now.getFullYear(), now.getMonth(), 'trades');
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -179,6 +187,16 @@ export default function Trades() {
           >
             Live trades
             {!isSubscribed && <Lock className="w-4 h-4" />}
+          </button>
+          <button
+            onClick={() => setActiveTab('calendar')}
+            className={`pb-3 px-1 transition-colors ${
+              activeTab === 'calendar'
+                ? 'border-b-2 border-blue-600 text-blue-600'
+                : 'text-gray-500 hover:text-gray-700'
+            }`}
+          >
+            Calendar
           </button>
         </div>
 
@@ -550,6 +568,17 @@ export default function Trades() {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* Calendar View */}
+        {activeTab === 'calendar' && (
+          <div className="bg-white rounded-xl border border-gray-200 p-6">
+            <TradingCalendar
+              type="trades"
+              dailyData={calendarData}
+              currency="₹"
+            />
           </div>
         )}
       </div>
