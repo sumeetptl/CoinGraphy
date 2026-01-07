@@ -7,12 +7,51 @@ export default function Auth() {
   const [isLogin, setIsLogin] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [repeatPassword, setRepeatPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [repeatPasswordError, setRepeatPasswordError] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const navigate = useNavigate();
   const { setUser } = useApp();
 
+  const validatePassword = (password: string) => {
+    if (password.length < 8) {
+      return 'Password must be at least 8 characters long';
+    }
+    if (!/(?=.*[a-z])/.test(password)) {
+      return 'Password must contain at least one lowercase letter';
+    }
+    if (!/(?=.*[A-Z])/.test(password)) {
+      return 'Password must contain at least one uppercase letter';
+    }
+    if (!/(?=.*\d)/.test(password)) {
+      return 'Password must contain at least one number';
+    }
+    return '';
+  };
+
+  const validateRepeatPassword = (repeatPassword: string, password: string) => {
+    if (repeatPassword !== password) {
+      return 'Passwords do not match';
+    }
+    return '';
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validate passwords for signup
+    if (!isLogin) {
+      const passwordValidationError = validatePassword(password);
+      const repeatPasswordValidationError = validateRepeatPassword(repeatPassword, password);
+      
+      setPasswordError(passwordValidationError);
+      setRepeatPasswordError(repeatPasswordValidationError);
+      
+      if (passwordValidationError || repeatPasswordValidationError) {
+        return;
+      }
+    }
     
     // Mock authentication
     const newUser = {
@@ -85,12 +124,50 @@ export default function Auth() {
                 id="password"
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (!isLogin) {
+                    setPasswordError(validatePassword(e.target.value));
+                    if (repeatPassword) {
+                      setRepeatPasswordError(validateRepeatPassword(repeatPassword, e.target.value));
+                    }
+                  }
+                }}
                 required
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                  passwordError ? 'border-red-500' : 'border-gray-300'
+                }`}
                 placeholder="••••••••"
               />
+              {!isLogin && passwordError && (
+                <p className="mt-1 text-sm text-red-600">{passwordError}</p>
+              )}
             </div>
+
+            {!isLogin && (
+              <div>
+                <label htmlFor="repeatPassword" className="block text-sm text-gray-700 mb-2">
+                  Repeat Password
+                </label>
+                <input
+                  id="repeatPassword"
+                  type="password"
+                  value={repeatPassword}
+                  onChange={(e) => {
+                    setRepeatPassword(e.target.value);
+                    setRepeatPasswordError(validateRepeatPassword(e.target.value, password));
+                  }}
+                  required
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                    repeatPasswordError ? 'border-red-500' : 'border-gray-300'
+                  }`}
+                  placeholder="••••••••"
+                />
+                {repeatPasswordError && (
+                  <p className="mt-1 text-sm text-red-600">{repeatPasswordError}</p>
+                )}
+              </div>
+            )}
 
             {!isLogin && (
               <div className="flex items-start gap-3">
