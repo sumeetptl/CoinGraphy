@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TrendingUp } from 'lucide-react';
 import { useApp } from '../App';
+import { authService, LoginRequest, RegisterRequest } from '../services/auth';
+import { getErrorMessage } from '../services/api';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(false);
@@ -11,6 +13,8 @@ export default function Auth() {
   const [passwordError, setPasswordError] = useState('');
   const [repeatPasswordError, setRepeatPasswordError] = useState('');
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
   const navigate = useNavigate();
   const { setUser } = useApp();
 
@@ -37,8 +41,9 @@ export default function Auth() {
     return '';
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setApiError('');
     
     // Validate passwords for signup
     if (!isLogin) {
@@ -53,14 +58,39 @@ export default function Auth() {
       }
     }
     
-    // Mock authentication
-    const newUser = {
-      email,
-      onboardingComplete: false,
-    };
+    setIsLoading(true);
     
-    setUser(newUser);
-    navigate('/onboarding');
+    try {
+      let response;
+      
+      if (isLogin) {
+        const loginData: LoginRequest = { email, password };
+        response = await authService.login(loginData);
+      } else {
+        const registerData: RegisterRequest = { email, password, password2: repeatPassword };
+        response = await authService.register(registerData);
+      }
+      
+      if (response.error) {
+        setApiError(getErrorMessage(response));
+        return;
+      }
+      
+      if (response.data) {
+        const userData = {
+          email,
+          onboardingComplete: false,
+          ...response.data.user,
+        };
+        
+        setUser(userData);
+        navigate('/onboarding');
+      }
+    } catch (error) {
+      setApiError('An unexpected error occurred. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -101,6 +131,12 @@ export default function Auth() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
+            {apiError && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+                <p className="text-sm text-red-600">{apiError}</p>
+              </div>
+            )}
+
             <div>
               <label htmlFor="email" className="block text-sm text-gray-700 mb-2">
                 Email
@@ -187,9 +223,17 @@ export default function Auth() {
 
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              disabled={isLoading}
+              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLogin ? 'Log in' : 'Create account'}
+              {isLoading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  {isLogin ? 'Logging in...' : 'Creating account...'}
+                </span>
+              ) : (
+                isLogin ? 'Log in' : 'Create account'
+              )}
             </button>
 
             <div className="text-center text-sm">
