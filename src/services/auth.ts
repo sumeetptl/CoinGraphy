@@ -11,25 +11,26 @@ export interface RegisterRequest {
   password2: string;
 }
 
-export interface AuthResponse {
-  access: string;
-  refresh: string;
-  user?: {
-    id: number;
-    email: string;
-    first_name?: string;
-    last_name?: string;
-  };
+export interface UserProfile {
+  experience_level: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED';
+  goal: 'LEARN'|'GROW'|'TRADE';
+  risk_comfort: 'LOW' | 'MEDIUM' | 'HIGH';
+  default_currency: string;
+  completed_onboarding: boolean;
 }
-
 export interface User {
   id: number;
   email: string;
   first_name?: string;
   last_name?: string;
-  onboardingComplete?: boolean;
+  profile: UserProfile;
 }
 
+export interface AuthResponse {
+  access: string;    // JWT access token
+  refresh: string;   // Refresh token
+  user?: User;       // User data from the API
+}
 export class AuthService {
   private static readonly ACCESS_TOKEN_KEY = 'access_token';
   private static readonly REFRESH_TOKEN_KEY = 'refresh_token';

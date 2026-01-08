@@ -19,6 +19,7 @@ import LearnDetail from './components/LearnDetail';
 import Settings from './components/Settings';
 import Billing from './components/Billing';
 import Support from './components/Support';
+import { ProtectedRoute } from './routes/ProtectedRoute';
 
 // Types
 export interface UserProfile {
@@ -63,25 +64,58 @@ function App() {
     <AppContext.Provider value={{ user, setUser, holdings, setHoldings }}>
       <Router>
         <Routes>
+          {/* Public routes */}
           <Route path="/" element={<LandingPage />} />
-          <Route path="/auth" element={user ? <Navigate to="/dashboard" /> : <Auth />} />
-          <Route path="/onboarding" element={user ? <Onboarding /> : <Navigate to="/auth" />} />
-          <Route path="/dashboard" element={user?.onboardingComplete ? <Dashboard /> : <Navigate to="/onboarding" />} />
-          <Route path="/insights" element={user?.onboardingComplete ? <InsightsDetail /> : <Navigate to="/auth" />} />
-          <Route path="/markets" element={user?.onboardingComplete ? <MarketsPageEnhanced /> : <Navigate to="/auth" />} />
-          <Route path="/markets/:symbol" element={user?.onboardingComplete ? <CoinDetailPage /> : <Navigate to="/auth" />} />
-          <Route path="/trades" element={user?.onboardingComplete ? <Trades /> : <Navigate to="/auth" />} />
-          <Route path="/trades/:tradeId" element={user?.onboardingComplete ? <TradeDetail /> : <Navigate to="/auth" />} />
-          <Route path="/trades/stats" element={user?.onboardingComplete ? <TradeStats /> : <Navigate to="/auth" />} />
-          <Route path="/futures-stats" element={user?.onboardingComplete ? <FuturesStats /> : <Navigate to="/auth" />} />
-          <Route path="/community-trade-ideas" element={user?.onboardingComplete ? <CommunityTradeIdeas /> : <Navigate to="/auth" />} />
-          <Route path="/payments" element={user?.onboardingComplete ? <Payments /> : <Navigate to="/auth" />} />
-          <Route path="/notifications" element={user?.onboardingComplete ? <Notifications /> : <Navigate to="/auth" />} />
-          <Route path="/learn" element={user?.onboardingComplete ? <Learn /> : <Navigate to="/auth" />} />
-          <Route path="/learn/:articleId" element={user?.onboardingComplete ? <LearnDetail /> : <Navigate to="/auth" />} />
-          <Route path="/settings" element={user?.onboardingComplete ? <Settings /> : <Navigate to="/auth" />} />
-          <Route path="/billing" element={user?.onboardingComplete ? <Billing /> : <Navigate to="/auth" />} />
-          <Route path="/support" element={user?.onboardingComplete ? <Support /> : <Navigate to="/auth" />} />
+          
+          {/* Auth routes - only accessible when not authenticated */}
+          <Route element={<ProtectedRoute requireAuth={false} redirectTo="/dashboard" />}>
+            <Route path="/auth" element={<Auth />} />
+          </Route>
+
+          {/* Onboarding route - only accessible when authenticated but onboarding not complete */}
+          <Route element={
+            <ProtectedRoute 
+              requireAuth 
+              requireOnboarding={false} 
+              redirectTo={
+                !user ? '/auth' : 
+                user.onboardingComplete ? '/dashboard' : undefined
+              } 
+            />
+          }>
+            <Route path="/onboarding" element={<Onboarding />} />
+          </Route>
+
+          {/* Protected routes - require authentication */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/insights" element={<InsightsDetail />} />
+            <Route path="/markets" element={<MarketsPageEnhanced />} />
+            <Route path="/markets/:symbol" element={<CoinDetailPage />} />
+            <Route path="/trades" element={<Trades />} />
+            <Route path="/trades/:tradeId" element={<TradeDetail />} />
+            <Route path="/trades/stats" element={<TradeStats />} />
+            <Route path="/futures-stats" element={<FuturesStats />} />
+            <Route path="/community-trade-ideas" element={<CommunityTradeIdeas />} />
+            <Route path="/payments" element={<Payments />} />
+            <Route path="/notifications" element={<Notifications />} />
+            <Route path="/learn" element={<Learn />} />
+            <Route path="/learn/:articleId" element={<LearnDetail />} />
+          </Route>
+
+          {/* Settings - accessible after login, doesn't require onboarding */}
+          <Route element={<ProtectedRoute requireAuth requireOnboarding={false} />}>
+            <Route path="/settings" element={<Settings />} />
+          </Route>
+          
+          {/* Routes that require both auth and onboarding */}
+          <Route element={<ProtectedRoute requireOnboarding />}>
+            <Route path="/billing" element={<Billing />} />
+            <Route path="/support" element={<Support />} />
+          </Route>
+          
+          {/* 404 route */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Router>
     </AppContext.Provider>
